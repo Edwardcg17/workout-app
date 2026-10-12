@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#101828">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Workout">
+    <meta name="description" content="A small workout tracker PWA demo.">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icons/icon-192.svg">
+    <link rel="icon" href="icons/icon-192.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="styles.css">
+    <title>Workout</title>
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="hero" aria-labelledby="app-title">
+        <div>
+          <p class="eyebrow">PWA Demo</p>
+          <h1 id="app-title">Workout</h1>
+          <p class="subtitle">A tiny tracker to prove home-screen install, offline reload, and local storage on your iPhone.</p>
+        </div>
+        <div class="status-pill" id="connection-status">Checking...</div>
+      </section>
+
+      <section class="panel today-card" aria-labelledby="today-title">
+        <div>
+          <p class="section-kicker">Today</p>
+          <h2 id="today-title">Demo Strength Session</h2>
+          <p class="muted">Bench press, row, squat. Log a set and close the app; the count should still be here when you reopen it.</p>
+        </div>
+        <div class="set-counter" aria-live="polite">
+          <span id="set-count">0</span>
+          <small>sets logged</small>
+        </div>
+      </section>
+
+      <section class="panel action-card" aria-label="Demo set logger">
+        <div class="set-row">
+          <span>Bench Press</span>
+          <strong>135 lb x 8</strong>
+        </div>
+        <button id="log-set" type="button">Log demo set</button>
+        <button class="secondary" id="reset-demo" type="button">Reset demo</button>
+      </section>
+
+      <section class="panel install-card" aria-labelledby="install-title">
+        <p class="section-kicker">iPhone Test</p>
+        <h2 id="install-title">Add it to your Home Screen</h2>
+        <ol>
+          <li>Open this page in Safari.</li>
+          <li>Tap Share, then Add to Home Screen.</li>
+          <li>Launch Workout from the new icon.</li>
+          <li>Try Airplane Mode to test the cached shell.</li>
+        </ol>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
