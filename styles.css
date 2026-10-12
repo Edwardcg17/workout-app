@@ -201,6 +201,24 @@ h2 {
   line-height: 1.45;
 }
 
+.backup-reminder {
+  margin: 0;
+  padding: 10px 12px;
+  border: 1px solid rgba(245, 158, 11, 0.32);
+  border-radius: 8px;
+  color: #92400e;
+  background: #fff7ed;
+  font-size: 0.92rem;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.backup-reminder.is-current {
+  border-color: rgba(15, 118, 110, 0.22);
+  color: var(--accent-dark);
+  background: #ecfdf5;
+}
+
 .set-row {
   display: flex;
   align-items: center;
