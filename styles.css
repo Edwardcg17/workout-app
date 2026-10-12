@@ -52,6 +52,16 @@ button.secondary {
   box-shadow: none;
 }
 
+input[type="file"] {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  clip-path: inset(50%);
+}
+
 .app-shell {
   width: min(100%, 520px);
   margin: 0 auto;
@@ -160,6 +170,37 @@ h2 {
   gap: 12px;
 }
 
+.backup-card {
+  display: grid;
+  gap: 12px;
+}
+
+.backup-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.file-button {
+  display: grid;
+  place-items: center;
+  min-height: 52px;
+  border: 1px solid rgba(15, 118, 110, 0.24);
+  border-radius: 8px;
+  color: var(--accent-dark);
+  background: #d9f3ef;
+  font-weight: 800;
+  text-align: center;
+}
+
+.backup-status {
+  min-height: 22px;
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
 .set-row {
   display: flex;
   align-items: center;
@@ -188,6 +229,10 @@ h2 {
 
 @media (max-width: 360px) {
   .today-card {
+    grid-template-columns: 1fr;
+  }
+
+  .backup-actions {
     grid-template-columns: 1fr;
   }
 
