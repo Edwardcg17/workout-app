@@ -1,4 +1,5 @@
 import { BottomTabs } from "./BottomTabs";
+import { BackIcon, GearIcon } from "./Icons";
 import type { ReactNode } from "react";
 import type { Tab } from "../types";
 
@@ -8,6 +9,8 @@ export function AppShell({
   children,
   onTab,
   onSettings,
+  onBack,
+  showBack,
   updateReady,
   onReload
 }: {
@@ -16,17 +19,30 @@ export function AppShell({
   children: ReactNode;
   onTab: (tab: Tab) => void;
   onSettings: () => void;
+  onBack: () => void;
+  showBack: boolean;
   updateReady: boolean;
   onReload: () => void;
 }) {
   return (
     <div className="app">
       <header className="topbar">
-        <div>
-          <p className="eyebrow">Personal tracker</p>
-          <h1>{title}</h1>
+        <div className="topbar-lead">
+          {showBack && (
+            <button className="icon-button ghost" onClick={onBack} aria-label="Back" type="button">
+              <BackIcon />
+            </button>
+          )}
+          <div>
+            <p className="eyebrow">Personal tracker</p>
+            <h1>{title}</h1>
+          </div>
         </div>
-        <button className="icon-button" onClick={onSettings} aria-label="Open settings" type="button">Gear</button>
+        {!showBack && (
+          <button className="icon-button ghost" onClick={onSettings} aria-label="Open settings" type="button">
+            <GearIcon />
+          </button>
+        )}
       </header>
       {updateReady && (
         <button className="update-banner" onClick={onReload} type="button">Update available. Reload</button>

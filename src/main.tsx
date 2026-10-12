@@ -1,6 +1,7 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App";
+import { APP_BASE } from "./constants";
 import "./styles.css";
 
 if ("storage" in navigator && "persist" in navigator.storage) {
@@ -9,7 +10,7 @@ if ("storage" in navigator && "persist" in navigator.storage) {
 
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register("/workout-app/service-worker.js").catch(() => undefined);
+    navigator.serviceWorker.register(`${APP_BASE}service-worker.js`).catch(() => undefined);
   });
 }
 

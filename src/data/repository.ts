@@ -34,6 +34,11 @@ export async function saveDayLog(log: DayLog) {
     if (typeof value === "number" && Number.isFinite(value) && value >= 0) cleaned[key] = value;
   });
   if (log.weightUnit) cleaned.weightUnit = log.weightUnit;
+  const hasMetrics = cleaned.weight !== undefined || cleaned.calories !== undefined || cleaned.proteinG !== undefined || cleaned.carbsG !== undefined || cleaned.fatG !== undefined;
+  if (!hasMetrics) {
+    await db.days.delete(log.date);
+    return;
+  }
   await db.days.put(cleaned);
 }
 
@@ -49,6 +54,27 @@ export async function saveWorkout(workout: Workout) {
 
 export async function deleteWorkout(id: ID) {
   await db.workouts.delete(id);
+}
+
+export async function duplicateWorkout(workout: Workout, date: string) {
+  const copy: Workout = {
+    id: makeId(),
+    date,
+    name: workout.name,
+    createdAt: nowIso(),
+    comments: workout.comments.map((comment) => ({ ...comment, id: makeId() })),
+    exercises: workout.exercises.map((entry) => ({
+      id: makeId(),
+      exerciseId: entry.exerciseId,
+      sets: entry.sets.map((set) => ({
+        ...set,
+        id: makeId(),
+        comments: set.comments.map((comment) => ({ ...comment, id: makeId() }))
+      }))
+    }))
+  };
+  await db.workouts.put(copy);
+  return copy;
 }
 
 export async function createUnit(name: string, kind: Unit["kind"], data?: AppData) {
@@ -73,7 +99,11 @@ export async function updateUnit(unit: Unit, updates: Partial<Pick<Unit, "name" 
 export async function deleteOrArchiveUnit(unit: Unit, data?: AppData) {
   const appData = data || await loadAppData();
   if (unit.builtIn) throw new Error("Built-in units cannot be deleted.");
-  if (unitUsage(unit.id, appData.workouts) > 0) {
+  const extraIds = [
+    ...appData.exercises.flatMap((exercise) => [exercise.defaultLoadUnitId, exercise.defaultRepsUnitId]),
+    appData.settings.defaultLoadUnitId
+  ];
+  if (unitUsage(unit.id, appData.workouts, extraIds) > 0) {
     await db.units.put({ ...unit, archived: true });
     return "archived" as const;
   }

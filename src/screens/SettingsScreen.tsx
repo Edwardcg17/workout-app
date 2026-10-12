@@ -3,7 +3,7 @@ import { exportDataFile, importCounts, replaceAllData, validateImportPayload } f
 import { saveSettings } from "../data/repository";
 import type { AppData, ExportPayload } from "../types";
 
-export function SettingsScreen({ data, onClose, onRefresh, toast }: { data: AppData; onClose: () => void; onRefresh: () => void; toast: (message: string) => void }) {
+export function SettingsScreen({ data, onRefresh, toast }: { data: AppData; onRefresh: () => void; toast: (message: string) => void }) {
   const loadUnits = data.units.filter((unit) => unit.kind === "load" && !unit.archived);
   const [pendingImport, setPendingImport] = useState<ExportPayload | null>(null);
   const [importMessage, setImportMessage] = useState("");
@@ -37,10 +37,6 @@ export function SettingsScreen({ data, onClose, onRefresh, toast }: { data: AppD
 
   return (
     <section className="settings stack">
-      <div className="section-head">
-        <h2>Settings</h2>
-        <button className="small" type="button" onClick={onClose}>Done</button>
-      </div>
       <section className="card">
         <h3>Defaults</h3>
         <label>Bodyweight unit
@@ -49,7 +45,7 @@ export function SettingsScreen({ data, onClose, onRefresh, toast }: { data: AppD
             <option value="kg">kg</option>
           </select>
         </label>
-        <label>Default load unit
+        <label>Default load unit for new exercises
           <select value={data.settings.defaultLoadUnitId} onChange={(event) => saveSettings({ defaultLoadUnitId: event.target.value }).then(onRefresh)}>
             {loadUnits.map((unit) => <option key={unit.id} value={unit.id}>{unit.name}</option>)}
           </select>
@@ -76,7 +72,7 @@ export function SettingsScreen({ data, onClose, onRefresh, toast }: { data: AppD
         {importMessage && <p className="backup-message">{importMessage}</p>}
         {pendingImport && <button className="danger" type="button" onClick={() => {
           if (confirm("Replace all current app data with this backup?")) {
-            replaceAllData(pendingImport).then(() => { setPendingImport(null); toast("Backup imported."); onRefresh(); onClose(); });
+            replaceAllData(pendingImport).then(() => { setPendingImport(null); toast("Backup imported."); onRefresh(); });
           }
         }}>Confirm replace all data</button>}
       </section>

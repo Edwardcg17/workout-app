@@ -3,7 +3,19 @@ import { exerciseLabel } from "../../data/repository";
 import type { AppData, SetEntry, Workout, WorkoutExercise } from "../../types";
 import { SetRow } from "./SetRow";
 
-export function ExerciseBlock({ entry, workout, data, onChange }: { entry: WorkoutExercise; workout: Workout; data: AppData; onChange: (workout: Workout) => void }) {
+export function ExerciseBlock({
+  entry,
+  workout,
+  data,
+  onChange,
+  onRefresh
+}: {
+  entry: WorkoutExercise;
+  workout: Workout;
+  data: AppData;
+  onChange: (workout: Workout) => void;
+  onRefresh: () => void;
+}) {
   const exercise = data.exercises.find((item) => item.id === entry.exerciseId);
 
   function updateEntry(next: WorkoutExercise) {
@@ -32,7 +44,17 @@ export function ExerciseBlock({ entry, workout, data, onChange }: { entry: Worko
         }}>Remove</button>
       </div>
       {entry.sets.map((set, index) => (
-        <SetRow key={set.id} set={set} index={index} data={data} onChange={(nextSet) => updateEntry({ ...entry, sets: entry.sets.map((item) => item.id === set.id ? nextSet : item) })} onDelete={() => updateEntry({ ...entry, sets: entry.sets.filter((item) => item.id !== set.id) })} />
+        <SetRow
+          key={set.id}
+          set={set}
+          index={index}
+          data={data}
+          onChange={(nextSet) => updateEntry({ ...entry, sets: entry.sets.map((item) => item.id === set.id ? nextSet : item) })}
+          onDelete={() => {
+            if (confirm("Delete this set?")) updateEntry({ ...entry, sets: entry.sets.filter((item) => item.id !== set.id) });
+          }}
+          onRefresh={onRefresh}
+        />
       ))}
       <button className="secondary" type="button" onClick={addSet}>Add set</button>
     </section>

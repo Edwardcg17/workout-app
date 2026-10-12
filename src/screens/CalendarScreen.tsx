@@ -25,9 +25,9 @@ export function CalendarScreen({ data, onOpenDay }: { data: AppData; onOpenDay: 
     <section>
       {reminder && <div className="backup-banner">{reminder}</div>}
       <div className="month-controls">
-        <button className="secondary" type="button" onClick={() => setMonth(addMonths(month, -1))}>Prev</button>
+        <button className="secondary" type="button" onClick={() => setMonth(addMonths(month, -1))} aria-label="Previous month">‹</button>
         <strong>{new Intl.DateTimeFormat(undefined, { month: "long", year: "numeric" }).format(month)}</strong>
-        <button className="secondary" type="button" onClick={() => setMonth(addMonths(month, 1))}>Next</button>
+        <button className="secondary" type="button" onClick={() => setMonth(addMonths(month, 1))} aria-label="Next month">›</button>
       </div>
       <button className="ghost full" type="button" onClick={() => setMonth(parseLocalDate(today))}>Today</button>
       <div className="weekday-row">

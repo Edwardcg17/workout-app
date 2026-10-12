@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
 import { AppShell } from "./components/AppShell";
-import { Modal } from "./components/Modal";
 import { Toast } from "./components/Toast";
 import { loadAppData } from "./data/repository";
 import { CalendarScreen } from "./screens/CalendarScreen";
@@ -29,32 +28,51 @@ export default function App() {
 
   useEffect(() => {
     refresh();
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.addEventListener("message", (event) => {
-        if (event.data?.type === "UPDATE_READY") setUpdateReady(true);
+    if (!("serviceWorker" in navigator)) return;
+    navigator.serviceWorker.getRegistration().then((registration) => {
+      if (!registration) return;
+      if (registration.waiting && navigator.serviceWorker.controller) setUpdateReady(true);
+      registration.addEventListener("updatefound", () => {
+        const installing = registration.installing;
+        installing?.addEventListener("statechange", () => {
+          if (installing.state === "installed" && navigator.serviceWorker.controller) setUpdateReady(true);
+        });
       });
-    }
+    });
   }, [refresh]);
+
+  function reloadForUpdate() {
+    navigator.serviceWorker.getRegistration().then((registration) => {
+      registration?.waiting?.postMessage("SKIP_WAITING");
+      window.location.reload();
+    });
+  }
 
   if (!data) return <div className="loading">Loading Workout...</div>;
 
-  const title = openDate ? "Day" : tab === "calendar" ? "Calendar" : tab === "graphs" ? "Graphs" : "Library";
+  const title = settingsOpen ? "Settings" : openDate ? "Day" : tab === "calendar" ? "Calendar" : tab === "graphs" ? "Graphs" : "Library";
 
   return (
-    <AppShell tab={tab} title={title} onTab={(next) => { setOpenDate(null); setTab(next); }} onSettings={() => setSettingsOpen(true)} updateReady={updateReady} onReload={() => window.location.reload()}>
-      {openDate ? (
-        <DayScreen date={openDate} data={data} onBack={() => setOpenDate(null)} onRefresh={refresh} toast={showToast} />
+    <AppShell
+      tab={tab}
+      title={title}
+      showBack={Boolean(settingsOpen || openDate)}
+      onBack={() => { if (settingsOpen) setSettingsOpen(false); else setOpenDate(null); }}
+      onTab={(next) => { setOpenDate(null); setSettingsOpen(false); setTab(next); }}
+      onSettings={() => setSettingsOpen(true)}
+      updateReady={updateReady}
+      onReload={reloadForUpdate}
+    >
+      {settingsOpen ? (
+        <SettingsScreen data={data} onRefresh={refresh} toast={showToast} />
+      ) : openDate ? (
+        <DayScreen date={openDate} data={data} onRefresh={refresh} toast={showToast} />
       ) : tab === "calendar" ? (
         <CalendarScreen data={data} onOpenDay={setOpenDate} />
       ) : tab === "graphs" ? (
         <GraphsScreen data={data} onRefresh={refresh} />
       ) : (
         <LibraryScreen data={data} onRefresh={refresh} toast={showToast} />
-      )}
-      {settingsOpen && (
-        <Modal title="Settings" onClose={() => setSettingsOpen(false)}>
-          <SettingsScreen data={data} onClose={() => setSettingsOpen(false)} onRefresh={refresh} toast={showToast} />
-        </Modal>
       )}
       <Toast message={toastMessage} />
     </AppShell>

@@ -58,13 +58,16 @@ export function exercisePoints(data: AppData, exerciseId: string, range: GraphRa
     const unit = data.units.find((item) => item.id === unitId)?.name || "";
     const loadUnit = data.units.find((item) => item.id === top.loadUnitId)?.name || "";
     const repsUnit = data.units.find((item) => item.id === top.repsUnitId)?.name || "";
-    const rir = top.rir ? ` @ RIR ${top.rir.max === undefined ? top.rir.min : `${top.rir.min}-${top.rir.max}`} ${repsUnit}` : "";
+    const rirText = top.rir ? `${top.rir.max === undefined ? top.rir.min : `${top.rir.min}-${top.rir.max}`}` : "";
+    const loadText = top.load === undefined ? "No load" : `${top.load} ${loadUnit}`;
+    const repsText = top.reps === undefined ? "" : `${top.reps} ${repsUnit}`;
+    const rirLine = rirText ? ` @ RIR ${rirText} ${repsUnit}` : "";
     return {
       id: `${date}-${top.id}`,
       date,
       value: metric === "load" ? top.load! : top.reps!,
-      label: `${metric === "load" ? top.load : top.reps} ${unit}`,
-      detail: `${top.load ?? "No load"} ${loadUnit} x ${top.reps ?? "-"} ${repsUnit}${rir}`,
+      label: `${metric === "load" ? loadText : `${top.reps} ${unit}`}`,
+      detail: `${repsText}${rirLine}`.trim(),
       set: top
     };
   });

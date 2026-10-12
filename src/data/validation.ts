@@ -4,12 +4,13 @@ export function normalizeName(name: string) {
   return name.trim().replace(/\s+/g, " ").toLowerCase();
 }
 
-export function unitUsage(unitId: string, workouts: Workout[]) {
+export function unitUsage(unitId: string, workouts: Workout[], extraIds: string[] = []) {
   let count = 0;
   workouts.forEach((workout) => workout.exercises.forEach((exercise) => exercise.sets.forEach((set) => {
     if (set.loadUnitId === unitId) count += 1;
     if (set.repsUnitId === unitId) count += 1;
   })));
+  extraIds.forEach((id) => { if (id === unitId) count += 1; });
   return count;
 }
 

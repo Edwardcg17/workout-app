@@ -29,6 +29,9 @@ export function validateImportPayload(payload: unknown): { data?: ExportPayload;
   if (candidate.exercises.some((exercise) => !unitIds.has(exercise.defaultLoadUnitId) || !unitIds.has(exercise.defaultRepsUnitId))) {
     return { error: "Backup has an exercise that references a missing unit." };
   }
+  if (candidate.settings?.defaultLoadUnitId && !unitIds.has(candidate.settings.defaultLoadUnitId)) {
+    return { error: "Backup settings reference a missing load unit." };
+  }
   for (const workout of candidate.workouts) {
     for (const entry of workout.exercises || []) {
       if (!exerciseIds.has(entry.exerciseId)) return { error: "Backup has a workout that references a missing exercise." };
@@ -58,9 +61,7 @@ export async function exportDataFile() {
   const file = new File([text], fileName, { type: "application/json" });
   const shareNavigator = navigator as Navigator & { canShare?: (data: ShareData) => boolean };
 
-  if (navigator.share && (!shareNavigator.canShare || shareNavigator.canShare({ files: [file] }))) {
-    await navigator.share({ files: [file], title: "Workout backup" });
-  } else {
+  const download = () => {
     const url = URL.createObjectURL(file);
     const link = document.createElement("a");
     link.href = url;
@@ -69,6 +70,16 @@ export async function exportDataFile() {
     link.click();
     link.remove();
     URL.revokeObjectURL(url);
+  };
+
+  try {
+    if (navigator.share && (!shareNavigator.canShare || shareNavigator.canShare({ files: [file] }))) {
+      await navigator.share({ files: [file], title: "Workout backup" });
+    } else {
+      download();
+    }
+  } catch {
+    download();
   }
 
   await saveSettings({ lastExportedAt: payload.exportedAt });

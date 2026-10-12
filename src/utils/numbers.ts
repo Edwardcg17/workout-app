@@ -1,7 +1,7 @@
 export function parseOptionalNumber(value: string) {
   const trimmed = value.trim();
   if (!trimmed || trimmed === ".") return undefined;
-  const parsed = Number(trimmed);
+  const parsed = Number(trimmed.endsWith(".") ? trimmed.slice(0, -1) : trimmed);
   return Number.isFinite(parsed) && parsed >= 0 ? parsed : Number.NaN;
 }
 
